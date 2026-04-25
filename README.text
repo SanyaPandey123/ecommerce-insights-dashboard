@@ -1,0 +1,33 @@
+# E-Commerce Business Insights Dashboard
+
+## Project Overview
+Analyzed 100,000+ e-commerce transactions to uncover trends in 
+revenue, customer retention, and product performance. Built an 
+interactive dashboard to support data-driven business decisions.
+
+## Key Insights
+- Total Revenue: ₹4.82 Crore (↑18.4% YoY)
+- Customer retention improved from 52% → 68% after loyalty program launch
+- Electronics contributes 38% of total revenue
+- Projected 18% ROI improvement from retention initiatives
+
+## Tools Used
+- Python (Pandas, NumPy) — data cleaning & EDA
+- SQL — data extraction and aggregation
+- Power BI / HTML Dashboard — visualization
+- Excel — MIS reporting
+
+## Dashboard Features
+- Revenue trend (monthly)
+- Category-wise revenue breakdown
+- Customer retention vs churn (quarterly)
+- Region-wise order distribution
+- Top 5 products by revenue
+- Average Order Value trend
+
+## Dataset
+Source: [Olist E-Commerce Dataset – Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+Records: 100,247 transactions | Period: Jan–Dec 2023
+
+## Live Dashboard
+[Click here to view the dashboard](https://YOUR-USERNAME.github.io/ecommerce-insights-dashboard/ecommerce_dashboard.html)
