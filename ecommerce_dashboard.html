@@ -1,0 +1,275 @@
+
+<h2 class="sr-only">E-Commerce Business Insights Dashboard — interactive analytics showing revenue, customer retention, and product performance</h2>
+
+<style>
+  .dash { font-family: var(--font-sans); padding: 0; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 8px; }
+  .top-bar h1 { font-size: 17px; font-weight: 500; margin: 0; color: var(--color-text-primary); }
+  .badge { font-size: 11px; background: #EAF3DE; color: #3B6D11; padding: 3px 10px; border-radius: 20px; }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .filter-row select { font-size: 13px; padding: 5px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .kpi { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+  .kpi-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .kpi-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .kpi-delta { font-size: 11px; margin-top: 3px; }
+  .delta-up { color: #3B6D11; }
+  .delta-down { color: #A32D2D; }
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .charts-row-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .chart-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; }
+  .chart-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 12px; }
+  .chart-sub { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 10px; margin-top: -8px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; font-size: 11px; color: var(--color-text-secondary); }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; font-weight: 500; color: var(--color-text-secondary); font-size: 11px; padding: 6px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  td { padding: 7px 8px; color: var(--color-text-primary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+  tr:last-child td { border-bottom: none; }
+  .pill { font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+  .pill-g { background: #EAF3DE; color: #3B6D11; }
+  .pill-r { background: #FCEBEB; color: #A32D2D; }
+  .pill-a { background: #FAEEDA; color: #854F0B; }
+  .insight-box { background: #E6F1FB; border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 12px; color: #0C447C; margin-top: 10px; }
+</style>
+
+<div class="dash">
+  <div class="top-bar">
+    <div>
+      <h1>E-Commerce Business Insights Dashboard</h1>
+      <div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px;">Dataset: 100,247 transactions &nbsp;|&nbsp; Jan 2023 – Dec 2023</div>
+    </div>
+    <span class="badge">FY 2023 Analysis</span>
+  </div>
+
+  <div class="filter-row">
+    <select id="regionFilter" onchange="applyFilters()">
+      <option value="all">All Regions</option>
+      <option value="north">North India</option>
+      <option value="west">West India</option>
+      <option value="south">South India</option>
+      <option value="east">East India</option>
+    </select>
+    <select id="catFilter" onchange="applyFilters()">
+      <option value="all">All Categories</option>
+      <option value="electronics">Electronics</option>
+      <option value="fashion">Fashion</option>
+      <option value="home">Home & Kitchen</option>
+      <option value="beauty">Beauty</option>
+    </select>
+    <select id="qtrFilter" onchange="applyFilters()">
+      <option value="all">Full Year</option>
+      <option value="q1">Q1</option>
+      <option value="q2">Q2</option>
+      <option value="q3">Q3</option>
+      <option value="q4">Q4</option>
+    </select>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi"><div class="kpi-label">Total Revenue</div><div class="kpi-value" id="kv1">₹4.82Cr</div><div class="kpi-delta delta-up" id="kd1">↑ 18.4% YoY</div></div>
+    <div class="kpi"><div class="kpi-label">Orders</div><div class="kpi-value" id="kv2">1,00,247</div><div class="kpi-delta delta-up" id="kd2">↑ 12.1% YoY</div></div>
+    <div class="kpi"><div class="kpi-label">Avg Order Value</div><div class="kpi-value" id="kv3">₹4,810</div><div class="kpi-delta delta-up" id="kd3">↑ 5.6%</div></div>
+    <div class="kpi"><div class="kpi-label">Customer Retention</div><div class="kpi-value" id="kv4">64.2%</div><div class="kpi-delta delta-up" id="kd4">↑ 8.3 pts</div></div>
+    <div class="kpi"><div class="kpi-label">Churn Rate</div><div class="kpi-value" id="kv5">35.8%</div><div class="kpi-delta delta-down" id="kd5">↓ improved</div></div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Monthly Revenue (₹ Lakhs)</div>
+      <div class="chart-sub">Revenue trend across 12 months</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#185FA5"></span>Revenue</span>
+        <span><span class="dot" style="background:#639922"></span>Target</span>
+      </div>
+      <div style="position:relative;height:200px;">
+        <canvas id="revenueChart" role="img" aria-label="Line chart of monthly revenue vs target across 12 months of 2023">Monthly revenue data from Jan to Dec 2023.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Revenue by Category</div>
+      <div class="chart-sub">Contribution breakdown</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#185FA5"></span>Electronics 38%</span>
+        <span><span class="dot" style="background:#1D9E75"></span>Fashion 27%</span>
+        <span><span class="dot" style="background:#D85A30"></span>Home 21%</span>
+        <span><span class="dot" style="background:#D4537E"></span>Beauty 14%</span>
+      </div>
+      <div style="position:relative;height:200px;">
+        <canvas id="catChart" role="img" aria-label="Doughnut chart showing revenue by category: Electronics 38%, Fashion 27%, Home 21%, Beauty 14%">Electronics leads with 38% of revenue.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row-3">
+    <div class="chart-card">
+      <div class="chart-title">Customer Retention vs Churn — Quarterly</div>
+      <div class="chart-sub">Retention improved by 18% after loyalty program launch in Q2</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#639922"></span>Retained</span>
+        <span><span class="dot" style="background:#E24B4A"></span>Churned</span>
+      </div>
+      <div style="position:relative;height:200px;">
+        <canvas id="retentionChart" role="img" aria-label="Stacked bar chart of customer retention vs churn across Q1 to Q4">Retention improved from Q1 to Q4.</canvas>
+      </div>
+      <div class="insight-box">Key insight: Retention jumped 18% in Q3 post loyalty program → projected 18% ROI improvement on repeat purchase revenue.</div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Orders by Region</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#185FA5"></span>North</span>
+        <span><span class="dot" style="background:#1D9E75"></span>West</span>
+        <span><span class="dot" style="background:#D85A30"></span>South</span>
+        <span><span class="dot" style="background:#7F77DD"></span>East</span>
+      </div>
+      <div style="position:relative;height:200px;">
+        <canvas id="regionChart" role="img" aria-label="Pie chart of orders by region: North 34%, West 28%, South 24%, East 14%">North India leads with 34% of orders.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:12px;">
+    <div class="chart-title">Top 5 Products by Revenue</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Product</th><th>Category</th><th>Units Sold</th><th>Revenue</th><th>Avg Rating</th><th>Trend</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Samsung 4K TV 55"</td><td>Electronics</td><td>4,821</td><td>₹57.8L</td><td>4.6 ★</td><td><span class="pill pill-g">↑ High</span></td></tr>
+          <tr><td>2</td><td>iPhone 14 (128GB)</td><td>Electronics</td><td>3,104</td><td>₹46.2L</td><td>4.8 ★</td><td><span class="pill pill-g">↑ High</span></td></tr>
+          <tr><td>3</td><td>Levi's Jeans Pack</td><td>Fashion</td><td>9,240</td><td>₹27.7L</td><td>4.3 ★</td><td><span class="pill pill-a">→ Stable</span></td></tr>
+          <tr><td>4</td><td>Instant Pot 6L</td><td>Home & Kitchen</td><td>6,810</td><td>₹20.4L</td><td>4.5 ★</td><td><span class="pill pill-g">↑ Growing</span></td></tr>
+          <tr><td>5</td><td>Lakme Foundation Kit</td><td>Beauty</td><td>12,300</td><td>₹12.3L</td><td>4.1 ★</td><td><span class="pill pill-r">↓ Declining</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Order Status Distribution</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#639922"></span>Delivered 72%</span>
+        <span><span class="dot" style="background:#EF9F27"></span>Returned 14%</span>
+        <span><span class="dot" style="background:#E24B4A"></span>Cancelled 9%</span>
+        <span><span class="dot" style="background:#378ADD"></span>Pending 5%</span>
+      </div>
+      <div style="position:relative;height:180px;">
+        <canvas id="statusChart" role="img" aria-label="Doughnut chart: Delivered 72%, Returned 14%, Cancelled 9%, Pending 5%">Most orders delivered successfully.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Avg Order Value — Monthly Trend</div>
+      <div class="legend"><span><span class="dot" style="background:#7F77DD"></span>AOV (₹)</span></div>
+      <div style="position:relative;height:180px;">
+        <canvas id="aovChart" role="img" aria-label="Line chart of average order value by month">AOV rose from ₹4,200 in Jan to ₹5,400 in Dec.</canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const baseData = {
+  revenue: [28,31,35,38,32,40,44,48,42,51,55,58],
+  target:  [30,33,35,37,35,38,42,45,44,50,52,55],
+  retention: { retained:[52,56,61,68], churned:[48,44,39,32] },
+  region: [34,28,24,14],
+  cat: [38,27,21,14],
+  status: [72,14,9,5],
+  aov: [4200,4350,4500,4600,4400,4750,4900,5100,4950,5200,5300,5400]
+};
+
+let charts = {};
+
+function makeRevChart(d) {
+  if(charts.rev) charts.rev.destroy();
+  charts.rev = new Chart(document.getElementById('revenueChart'), {
+    type:'line',
+    data:{
+      labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      datasets:[
+        {label:'Revenue',data:d.revenue,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.08)',tension:0.4,fill:true,pointRadius:3},
+        {label:'Target',data:d.target,borderColor:'#639922',borderDash:[4,4],tension:0.4,fill:false,pointRadius:0}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₹'+v+'L',font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}
+  });
+}
+
+function makeCatChart(d) {
+  if(charts.cat) charts.cat.destroy();
+  charts.cat = new Chart(document.getElementById('catChart'), {
+    type:'doughnut',
+    data:{labels:['Electronics','Fashion','Home','Beauty'],datasets:[{data:d.cat,backgroundColor:['#185FA5','#1D9E75','#D85A30','#D4537E'],borderWidth:2,borderColor:'var(--color-background-primary)'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}
+  });
+}
+
+function makeRetChart(d) {
+  if(charts.ret) charts.ret.destroy();
+  charts.ret = new Chart(document.getElementById('retentionChart'), {
+    type:'bar',
+    data:{
+      labels:['Q1','Q2','Q3','Q4'],
+      datasets:[
+        {label:'Retained',data:d.retention.retained,backgroundColor:'#639922',borderRadius:3},
+        {label:'Churned',data:d.retention.churned,backgroundColor:'#E24B4A',borderRadius:3}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{font:{size:11}},grid:{display:false}},y:{stacked:true,ticks:{font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}}}}
+  });
+}
+
+function makeRegionChart(d) {
+  if(charts.region) charts.region.destroy();
+  charts.region = new Chart(document.getElementById('regionChart'), {
+    type:'doughnut',
+    data:{labels:['North','West','South','East'],datasets:[{data:d.region,backgroundColor:['#185FA5','#1D9E75','#D85A30','#7F77DD'],borderWidth:2,borderColor:'var(--color-background-primary)'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}
+  });
+}
+
+function makeStatusChart(d) {
+  if(charts.status) charts.status.destroy();
+  charts.status = new Chart(document.getElementById('statusChart'), {
+    type:'doughnut',
+    data:{labels:['Delivered','Returned','Cancelled','Pending'],datasets:[{data:d.status,backgroundColor:['#639922','#EF9F27','#E24B4A','#378ADD'],borderWidth:2,borderColor:'var(--color-background-primary)'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false}}}
+  });
+}
+
+function makeAOVChart(d) {
+  if(charts.aov) charts.aov.destroy();
+  charts.aov = new Chart(document.getElementById('aovChart'), {
+    type:'line',
+    data:{
+      labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      datasets:[{label:'AOV',data:d.aov,borderColor:'#7F77DD',backgroundColor:'rgba(127,119,221,0.08)',tension:0.4,fill:true,pointRadius:3}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₹'+v.toLocaleString('en-IN'),font:{size:10}},grid:{color:'rgba(128,128,128,0.1)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}
+  });
+}
+
+function applyFilters() {
+  const region = document.getElementById('regionFilter').value;
+  const cat = document.getElementById('catFilter').value;
+  const qtr = document.getElementById('qtrFilter').value;
+  let d = JSON.parse(JSON.stringify(baseData));
+  const multipliers = {north:1.0,west:0.82,south:0.71,east:0.41,all:1};
+  const catMul = {electronics:0.38,fashion:0.27,home:0.21,beauty:0.14,all:1};
+  const qtrIdx = {q1:[0,1,2],q2:[3,4,5],q3:[6,7,8],q4:[9,10,11],all:null};
+  let rm = multipliers[region]||1, cm = catMul[cat]||1;
+  if(qtrIdx[qtr]) { d.revenue = qtrIdx[qtr].map(i=>d.revenue[i]); d.target = qtrIdx[qtr].map(i=>d.target[i]); d.aov = qtrIdx[qtr].map(i=>d.aov[i]); }
+  d.revenue = d.revenue.map(v=>Math.round(v*rm*cm/cm));
+  makeRevChart(d); makeCatChart(d); makeRetChart(d); makeRegionChart(d); makeStatusChart(d); makeAOVChart(d);
+}
+
+makeRevChart(baseData);
+makeCatChart(baseData);
+makeRetChart(baseData);
+makeRegionChart(baseData);
+makeStatusChart(baseData);
+makeAOVChart(baseData);
+</script>
